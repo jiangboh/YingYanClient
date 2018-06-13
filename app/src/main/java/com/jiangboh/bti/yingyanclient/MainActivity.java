@@ -5,13 +5,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Window;
 import android.view.WindowManager;
 
 import com.jiangboh.bti.yingyanclient.BaiduTrare.ScreenManager;
 import com.jiangboh.bti.yingyanclient.BaiduTrare.TrareService;
+import com.jiangboh.bti.yingyanclient.PublicUnit.MyFunction;
 import com.jiangboh.bti.yingyanclient.PublicUnit.MyPermissions;
 import com.jiangboh.bti.yingyanclient.PublicUnit.SystemUtil;
 
@@ -21,11 +21,11 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     private String TAG = "MainActivity";
     private void showSystemParameter() {
         String TAG = "系统参数：";
-        Log.e(TAG, "手机厂商：" + SystemUtil.getDeviceBrand());
-        Log.e(TAG, "手机型号：" + SystemUtil.getSystemModel());
-        Log.e(TAG, "手机当前系统语言：" + SystemUtil.getSystemLanguage());
-        Log.e(TAG, "Android系统版本号：" + SystemUtil.getSystemVersion());
-        Log.e(TAG, "手机IMEI：" + SystemUtil.getIMEI(getApplicationContext()));
+        MyFunction.MyPrint( "手机厂商：" + SystemUtil.getDeviceBrand());
+        MyFunction.MyPrint( "手机型号：" + SystemUtil.getSystemModel());
+        MyFunction.MyPrint( "手机当前系统语言：" + SystemUtil.getSystemLanguage());
+        MyFunction.MyPrint( "Android系统版本号：" + SystemUtil.getSystemVersion());
+        MyFunction.MyPrint( "手机IMEI：" + SystemUtil.getIMEI(getApplicationContext()));
     }
 
     public static void actionToMainActivity(Context pContext) {
@@ -59,10 +59,10 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        Log.w(TAG, "in onRequestPermissionsResult");
+        MyFunction.MyPrint( "in onRequestPermissionsResult");
         this.finish();
 
-        //showSystemParameter();
+        showSystemParameter();
         SystemUtil.jumpStartInterface(getApplicationContext());
 
         Intent intent = new Intent();
@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         boolean isClose = getIntent().getBooleanExtra("isClose",true);
         if (false == new MyPermissions(this).show(isClose)) {  //如果返回true表示有权限确认，那么权限确认完自动弹出界面
             //showSystemParameter();
-            Log.w(TAG, "in oonStart");
+            MyFunction.MyPrint( "in oonStart");
             Intent intent = new Intent();
             intent.setClass(getApplicationContext(), TrareService.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TAG,"onResume is invoke!!!");
+        MyFunction.MyPrint("onResume is invoke!!!");
 
         ScreenManager.getInstance(this).setActivity(this);
     }

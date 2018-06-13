@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 
 import java.util.Locale;
 
@@ -86,7 +85,7 @@ public class SystemUtil {
         Intent intent = new Intent();
         try {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            Log.e("HLQ_Struggle", "******************当前手机型号为：" + getDeviceBrand());
+            MyFunction.MyPrint("当前手机型号为：" + getDeviceBrand());
             ComponentName componentName = null;
             if (getDeviceBrand().equals("Xiaomi")) { // 红米Note4测试通过
                 componentName = new ComponentName("com.miui.securitycenter",

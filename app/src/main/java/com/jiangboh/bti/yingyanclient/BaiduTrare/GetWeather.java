@@ -1,9 +1,9 @@
 package com.jiangboh.bti.yingyanclient.BaiduTrare;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.baidu.trace.Trace;
+import com.jiangboh.bti.yingyanclient.PublicUnit.MyFunction;
 import com.jiangboh.bti.yingyanclient.PublicUnit.StaticParam;
 
 import org.json.JSONArray;
@@ -57,7 +57,7 @@ public class GetWeather {
             //当前位置
             String addressStr = sb.toString();
 
-            Log.d("地址信息：", "城市：" + city + "地址：" + addressStr);
+            MyFunction.MyPrint(d("地址信息：", "城市：" + city + "地址：" + addressStr);
             sendRequestWithHttpURLConnection();
         }
 
@@ -106,7 +106,7 @@ public class GetWeather {
     }
 
     private void showResponse(final String response){
-        Log.d("TAG",response);
+        MyFunction.MyPrint(response);
 
         try {
             JSONObject jsonObject = new JSONObject(response);

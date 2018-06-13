@@ -23,7 +23,7 @@ public class CopyAcessFile {
         StringBuilder log = new StringBuilder();
         String inPath = getInnerSDCardPath();
         inPath = "/data/data/com.jiangboh.bti.yingyanclient";
-        log.append("内置SD卡路径：" + inPath + "\r\n");
+        MyFunction.MyPrint("内置SD卡路径：" + inPath + "\r\n");
 
         //command.run( "mkdir " + inPath + "/bb",3000);
 

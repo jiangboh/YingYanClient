@@ -5,7 +5,6 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
 import com.baidu.trace.LBSTraceClient;
 import com.baidu.trace.Trace;
@@ -46,7 +45,6 @@ import com.jiangboh.bti.yingyanclient.R;
 import java.util.HashMap;
 import java.util.Map;
 
-import static android.content.ContentValues.TAG;
 import static android.content.Context.NOTIFICATION_SERVICE;
 
 /**
@@ -54,8 +52,8 @@ import static android.content.Context.NOTIFICATION_SERVICE;
  */
 
 public class MyBaiduTrare {
-        private static final int STOP_TRACE_SERVER = 1;
-        private static final int ADD_POINTS = 2;
+        public static final int STOP_TRACE_SERVER = 1;
+        public static int ADD_POINTS = 2000;
 
         private Context context;
 
@@ -105,17 +103,17 @@ public class MyBaiduTrare {
                 //添加Entity回调接口
                 @Override
                 public void onAddEntityCallback(AddEntityResponse response){
-                    Log.d(TAG,String.format("onAddEntityCallback, errorNo:%d, message:%s ", response.status,response.message));
+                    MyFunction.MyPrint(String.format("onAddEntityCallback, errorNo:%d, message:%s ", response.status,response.message));
                 }
                 //更新Entity回调接口
                 @Override
                 public void onUpdateEntityCallback(UpdateEntityResponse response) {
-                    Log.d(TAG,String.format("onUpdateEntityCallback, errorNo:%d, message:%s ", response.status,response.message));
+                    MyFunction.MyPrint(String.format("onUpdateEntityCallback, errorNo:%d, message:%s ", response.status,response.message));
                 }
                /* @Override
                 public void onReceiveLocation(TraceLocation location){
                     if (location.status ==0 ) {
-                        Log.w(TAG, "onLatestPointCallback 经度：" + location.getLongitude() + "；维度：" + location.getLatitude());
+                        MyFunction.MyPrint( "onLatestPointCallback 经度：" + location.getLongitude() + "；维度：" + location.getLatitude());
                         new GetWeather(context,mTrace).getWeatherInfo(location.getLongitude(),location.getLatitude());
 
                         isStartStatus = false;
@@ -124,7 +122,7 @@ public class MyBaiduTrare {
                     }
                     else
                     {
-                        Log.w(TAG, "未获取到位置坐标。。。");
+                        MyFunction.MyPrint( "未获取到位置坐标。。。");
                     }
                 }*/
 
@@ -159,7 +157,7 @@ public class MyBaiduTrare {
                 //实时定位回调接口
                 @Override
                 public void onReceiveLocation(TraceLocation location){
-                    Log.w(TAG, "onLatestPointCallback 经度：" + location.getLongitude() + "；维度：" + location.getLatitude());
+                    MyFunction.MyPrint( "onLatestPointCallback 经度：" + location.getLongitude() + "；维度：" + location.getLatitude());
                 }
 
             };
@@ -172,36 +170,43 @@ public class MyBaiduTrare {
                         if (response.getTag() == STOP_TRACE_SERVER)
                         {
                             //isGetWeather = true;
-                            Log.w(TAG, "onLatestPointCallback 经度：" + latLng.getLatitude() + "；维度：" + latLng.getLongitude());
+                            MyFunction.MyPrint( "onLatestPointCallback 经度：" + latLng.getLatitude() + "；维度：" + latLng.getLongitude());
                             new GetWeather(context, mTrace).getWeatherInfo(latLng.getLongitude(), latLng.getLatitude());
                             isStartStatus = false;
                             mTraceClient.stopGather(mTraceListener);
                             mTraceClient.stopTrace(mTrace, mTraceListener);
-                        } else if (response.getTag() == ADD_POINTS){
-                            Map<String, String> columns = new HashMap<String, String>();
-                            columns.put("action", "发送短信");
-                            columns.put("desc", "本次发送短信内容");
+                        } else if (response.getTag() >= ADD_POINTS){
+                            String action = StaticParam.updataMessage.getAction(response.getTag());
+                            String desc = StaticParam.updataMessage.getAction(response.getTag());
+                            if (!action.isEmpty() && !desc.isEmpty()) {
+                                Map<String, String> columns = new HashMap<String, String>();
 
-                            AddPointRequest requst = new AddPointRequest();
-                            requst.setServiceId(serviceId);
-                            requst.setEntityName(entityName);
-                            Point point = new Point(latLng, CoordType.bd09ll);
-                            point.setLocTime(System.currentTimeMillis() / 1000);
-                            requst.setPoint(point);
-                            requst.setColumns(columns);
-                            mTraceClient.addPoint(requst, mTrackListener);
+                                columns.put("action", action);
+                                columns.put("desc", desc);
+
+                                AddPointRequest requst = new AddPointRequest();
+                                requst.setServiceId(serviceId);
+                                requst.setEntityName(entityName);
+                                Point point = new Point(latLng, CoordType.bd09ll);
+                                point.setLocTime(System.currentTimeMillis() / 1000);
+                                requst.setPoint(point);
+                                requst.setColumns(columns);
+                                MyFunction.MyPrint("上传动作：" + action + ";动作描述：" + desc);
+                                mTraceClient.addPoint(requst, mTrackListener);
+                            }
+                            StaticParam.updataMessage.del(response.getTag());
+
                         }
-
                     }
                     else
                     {
-                        Log.w(TAG, "未获取到位置坐标。。。");
+                        MyFunction.MyPrint( "未获取到位置坐标。。。");
                     }
                 }
 
                 @Override
                 public void onAddPointCallback(AddPointResponse response) {
-                    Log.d(TAG,String.format("onAddPointCallback, errorNo:%d, message:%s " + System.currentTimeMillis()/1000, response.status, response.message));
+                    MyFunction.MyPrint(String.format("onAddPointCallback, errorNo:%d, message:%s " + System.currentTimeMillis()/1000, response.status, response.message));
                 }
                 public void onAddPointsCallback(AddPointsResponse response){}
                 public void onHistoryTrackCallback(HistoryTrackResponse response){}
@@ -222,7 +227,7 @@ public class MyBaiduTrare {
                  */
                 @Override
                 public void onBindServiceCallback(int errorNo, String message) {
-                    Log.d(TAG,String.format("onBindServiceCallback, errorNo:%d, message:%s ", errorNo, message));
+                    MyFunction.MyPrint(String.format("onBindServiceCallback, errorNo:%d, message:%s ", errorNo, message));
                 }
 
 
@@ -246,7 +251,7 @@ public class MyBaiduTrare {
                         isTraceStarted = true;
                     }
 
-                    Log.d(TAG,String.format("onStartTraceCallback, errorNo:%d, message:%s ", errorNo, message));
+                    MyFunction.MyPrint(String.format("onStartTraceCallback, errorNo:%d, message:%s ", errorNo, message));
                 }
 
 
@@ -268,7 +273,7 @@ public class MyBaiduTrare {
                         isGatherStarted = false;
                         //unregisterPowerReceiver();
                     }
-                    Log.d(TAG,String.format("onStopTraceCallback, errorNo:%d, message:%s ", errorNo, message));
+                    MyFunction.MyPrint(String.format("onStopTraceCallback, errorNo:%d, message:%s ", errorNo, message));
                 }
 
 
@@ -292,7 +297,7 @@ public class MyBaiduTrare {
                         mTraceClient.updateEntity(entityRequest,mEntityListener);
 
                     }
-                    Log.d(TAG,String.format("onStartGatherCallback, errorNo:%d, message:%s ", errorNo, message));
+                    MyFunction.MyPrint(String.format("onStartGatherCallback, errorNo:%d, message:%s ", errorNo, message));
                 }
 
 
@@ -311,7 +316,7 @@ public class MyBaiduTrare {
                     if (StatusCodes.SUCCESS == errorNo || StatusCodes.GATHER_STOPPED == errorNo) {
                         isGatherStarted = false;
                     }
-                    Log.d(TAG,String.format("onStopGatherCallback, errorNo:%d, message:%s ", errorNo, message));
+                    MyFunction.MyPrint(String.format("onStopGatherCallback, errorNo:%d, message:%s ", errorNo, message));
                 }
 
                 /*
@@ -434,7 +439,7 @@ public class MyBaiduTrare {
         public void run() {
             while (true) {
                 while (!isGetWeather) {
-                    Log.d(TAG, "获取位置信。。。");
+                    MyFunction.MyPrint( "获取位置信。。。");
                     LocRequest loc = new LocRequest(serviceId);
                     mTraceClient.queryRealTimeLoc(loc, mEntityListener);
                     MyFunction.MySleep(3000);
@@ -442,14 +447,14 @@ public class MyBaiduTrare {
                 }
 
                 if (!isTraceStarted) {
-                    Log.d(TAG, "开启服务。。。" );
+                    MyFunction.MyPrint( "开启服务。。。" );
                     // 开启服务
                     mTraceClient.startTrace(mTrace, mTraceListener);
                     MyFunction.MySleep(3000);
                     continue;
                 }
                 if (!isGatherStarted) {
-                    Log.d(TAG, "开启采集。。。");
+                    MyFunction.MyPrint( "开启采集。。。");
                     // 开启采集
                     mTraceClient.startGather(mTraceListener);
                     MyFunction.MySleep(3000);
@@ -466,7 +471,7 @@ public class MyBaiduTrare {
         public void run() {
             while (true) {
                 if (!isTraceStarted && isGetWeather) {
-                    Log.d(TAG, "重新设置通知栏:" + StaticParam.NotificationText);
+                    MyFunction.MyPrint( "重新设置通知栏:" + StaticParam.NotificationText);
                     setNotification(StaticParam.NotificationText);
                     isStartStatus = true;
                 }
@@ -491,7 +496,7 @@ public class MyBaiduTrare {
              public void run(){
                 while(true)
                 {
-                    Log.d(TAG,"延时时间:"+ timer);
+                    MyFunction.MyPrint("延时时间:"+ timer);
                     MyFunction.MySleep(timer);
 
                     if (isTraceStarted && isGatherStarted) {
@@ -511,9 +516,9 @@ public class MyBaiduTrare {
             }
         }
 
-    public void SendAddPoins()
+    public void SendAddPoins(int requestTag)
     {
-        LatestPointRequest request = new LatestPointRequest(ADD_POINTS,serviceId,entityName);
+        LatestPointRequest request = new LatestPointRequest(requestTag,serviceId,entityName);
         mTraceClient.queryLatestPoint(request,mTrackListener);
     }
     /**

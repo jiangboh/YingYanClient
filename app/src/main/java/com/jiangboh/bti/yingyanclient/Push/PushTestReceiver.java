@@ -3,10 +3,10 @@ package com.jiangboh.bti.yingyanclient.Push;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.baidu.android.pushservice.PushMessageReceiver;
 import com.jiangboh.bti.yingyanclient.BaiduTrare.TrareService;
+import com.jiangboh.bti.yingyanclient.PublicUnit.MyFunction;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -64,11 +64,11 @@ public class PushTestReceiver extends PushMessageReceiver {
         String responseString = "onBind errorCode=" + errorCode + " appid="
                 + appid + " userId=" + userId + " channelId=" + channelId
                 + " requestId=" + requestId;
-        Log.d(TAG, responseString);
+        MyFunction.MyPrint( responseString);
 
         if (errorCode == 0) {
             // 绑定成功
-            Log.d(TAG, "绑定成功");
+            MyFunction.MyPrint( "绑定成功");
         }
         // Demo更新界面展示代码，应用请在这里加入自己的处理逻辑
         updateContent(context, responseString);
@@ -86,7 +86,7 @@ public class PushTestReceiver extends PushMessageReceiver {
                           String customContentString) {
         String messageString = "透传消息 onMessage=\"" + message
                 + "\" customContentString=" + customContentString;
-        Log.d(TAG, messageString);
+        MyFunction.MyPrint( messageString);
 
         // 自定义内容获取方式，mykey和myvalue对应透传消息推送时自定义内容中设置的键和值
         if (!TextUtils.isEmpty(customContentString)) {
@@ -121,7 +121,7 @@ public class PushTestReceiver extends PushMessageReceiver {
         String notifyString = "通知到达 onNotificationArrived  title=\"" + title
                 + "\" description=\"" + description + "\" customContent="
                 + customContentString;
-        Log.d(TAG, notifyString);
+        MyFunction.MyPrint( notifyString);
 
         // 自定义内容获取方式，mykey和myvalue对应通知推送时自定义内容中设置的键和值
         if (!TextUtils.isEmpty(customContentString)) {
@@ -155,7 +155,7 @@ public class PushTestReceiver extends PushMessageReceiver {
                                       String description, String customContentString) {
         String notifyString = "通知点击 onNotificationClicked title=\"" + title + "\" description=\""
                 + description + "\" customContent=" + customContentString;
-        Log.d(TAG, notifyString);
+        MyFunction.MyPrint( notifyString);
 
         // 自定义内容获取方式，mykey和myvalue对应通知推送时自定义内容中设置的键和值
         if (!TextUtils.isEmpty(customContentString)) {
@@ -191,7 +191,7 @@ public class PushTestReceiver extends PushMessageReceiver {
         String responseString = "onSetTags errorCode=" + errorCode
                 + " successTags=" + successTags + " failTags=" + failTags
                 + " requestId=" + requestId;
-        Log.d(TAG, responseString);
+        MyFunction.MyPrint( responseString);
 
         // Demo更新界面展示代码，应用请在这里加入自己的处理逻辑
         updateContent(context, responseString);
@@ -212,7 +212,7 @@ public class PushTestReceiver extends PushMessageReceiver {
         String responseString = "onDelTags errorCode=" + errorCode
                 + " successTags=" + successTags + " failTags=" + failTags
                 + " requestId=" + requestId;
-        Log.d(TAG, responseString);
+        MyFunction.MyPrint( responseString);
 
         // Demo更新界面展示代码，应用请在这里加入自己的处理逻辑
         updateContent(context, responseString);
@@ -230,7 +230,7 @@ public class PushTestReceiver extends PushMessageReceiver {
     public void onListTags(Context context, int errorCode, List<String> tags, String requestId) {
         String responseString = "onListTags errorCode=" + errorCode + " tags="
                 + tags;
-        Log.d(TAG, responseString);
+        MyFunction.MyPrint( responseString);
 
         // Demo更新界面展示代码，应用请在这里加入自己的处理逻辑
         updateContent(context, responseString);
@@ -247,18 +247,18 @@ public class PushTestReceiver extends PushMessageReceiver {
     public void onUnbind(Context context, int errorCode, String requestId) {
         String responseString = "onUnbind errorCode=" + errorCode
                 + " requestId = " + requestId;
-        Log.d(TAG, responseString);
+        MyFunction.MyPrint( responseString);
 
         if (errorCode == 0) {
             // 解绑定成功
-            Log.d(TAG, "解绑成功");
+            MyFunction.MyPrint( "解绑成功");
         }
         // Demo更新界面展示代码，应用请在这里加入自己的处理逻辑
         updateContent(context, responseString);
     }
 
     private void updateContent(Context context, String content) {
-        Log.d(TAG, "updateContent");
+        MyFunction.MyPrint( "updateContent");
         String logText = "HjbTest" ;
 
         if (!logText.equals("")) {

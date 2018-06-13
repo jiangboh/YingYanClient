@@ -4,13 +4,10 @@ import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.util.Log;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
-import static android.content.ContentValues.TAG;
 
 
 public class MusicPlayer {
@@ -27,16 +24,16 @@ public class MusicPlayer {
         @Override
         public void onAudioFocusChange(int focusChange)
         {
-            Log.w(TAG,"audio focus change to " + focusChange);
+            MyFunction.MyPrint("audio focus change to " + focusChange);
             if (focusChange == AudioManager.AUDIOFOCUS_LOSS
                     || focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT
                     || focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK
                     || focusChange == AudioManager.AUDIOFOCUS_GAIN) {
                 if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                    Log.w(TAG,"audio focus loss...");
+                    MyFunction.MyPrint("audio focus loss...");
                     mediaPlayer.pause();
                 } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
-                    Log.w(TAG,"audio focus gain...");
+                    MyFunction.MyPrint("audio focus gain...");
                     mediaPlayer.start();
                 }
             }
@@ -51,13 +48,13 @@ public class MusicPlayer {
         try {
             assetFileDescriptor = context.getAssets().openFd("Kalimba.mp3");
         } catch (IOException e) {
-            Log.w(TAG,e);
+            MyFunction.MyPrint(e.getMessage());
         }
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 audioManager.abandonAudioFocus(onAudioFocusChangeListener);
-                Log.w(TAG,"play completely and abandon audio focus");
+                MyFunction.MyPrint("play completely and abandon audio focus");
 //                    mediaPlayer.stop();
                     /*mediaPlayer.start();
                     mediaPlayer.setLooping(true);*/
@@ -68,7 +65,7 @@ public class MusicPlayer {
             public void onPrepared(MediaPlayer mp) {
                 mp.start();
                 mp.setLooping(true);
-                Log.w(TAG,"start play...");
+                MyFunction.MyPrint("start play...");
             }
         });
     }
@@ -79,22 +76,22 @@ public class MusicPlayer {
             return;
         }
         if (isAudioFocused()) {
-            Log.w(TAG,"audio is on focus");
+            MyFunction.MyPrint("audio is on focus");
             return;
         }
         int result = audioManager.requestAudioFocus(
                 onAudioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
         if (result == AudioManager.AUDIOFOCUS_REQUEST_FAILED) { // 获取焦点失败
-            Log.w(TAG,"request audio focus failed");
+            MyFunction.MyPrint("request audio focus failed");
             return;
         }
-        Log.w(TAG,"request audio focus successfully");
+        MyFunction.MyPrint("request audio focus successfully");
         try {
             mediaPlayer.reset();
             mediaPlayer.setDataSource(assetFileDescriptor.getFileDescriptor(), assetFileDescriptor.getStartOffset(), assetFileDescriptor.getLength());
             mediaPlayer.prepareAsync();
         } catch (Exception e) {
-            Log.w(TAG,e);
+            MyFunction.MyPrint(e.getMessage());
         }
     }
 
@@ -125,10 +122,10 @@ public class MusicPlayer {
                 SyncLogUtil.i("dtmf:" + dtmf);
                 SyncLogUtil.i("tts:" + tts);*/
             } else {
-                Log.w(TAG,"android.media.AudioSystem.isStreamActive method is null");
+                MyFunction.MyPrint("android.media.AudioSystem.isStreamActive method is null");
             }
         } catch (Exception e) {
-            Log.w(TAG,e);
+            MyFunction.MyPrint(e.getMessage());
         }
         return isFocused;
     }
@@ -145,14 +142,14 @@ public class MusicPlayer {
             Method method = audioManager.getClass().getMethod("unregisterAudioFocusListener", AudioManager.OnAudioFocusChangeListener.class);
             if (method != null) {
                 method.invoke(audioManager, onAudioFocusChangeListener);
-                Log.w(TAG,"unregisterAudioFocusListener successfully");
+                MyFunction.MyPrint("unregisterAudioFocusListener successfully");
             }
         } catch (NoSuchMethodException e) {
-            Log.w(TAG,e);
+            MyFunction.MyPrint(e.getMessage());
         } catch (InvocationTargetException e) {
-            Log.w(TAG,e);
+            MyFunction.MyPrint(e.getMessage());
         } catch (IllegalAccessException e) {
-            Log.w(TAG,e);
+            MyFunction.MyPrint(e.getMessage());
         } finally {
             audioManager = null;
         }

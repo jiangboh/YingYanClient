@@ -64,7 +64,7 @@ public class RunExeCommand {
             Lock readLock = lock.readLock();
             readLock.lock();
             try {
-                Log.i("auto", "getResult");
+                MyFunction.MyPrint("getResult");
                 return new String(result);
             } finally {
                 readLock.unlock();
@@ -81,7 +81,7 @@ public class RunExeCommand {
          * @return this
          */
         public RunExeCommand run(String command, final int maxTime) {
-            Log.i("auto", "run command:" + command + ",maxtime:" + maxTime);
+            MyFunction.MyPrint("run command:" + command + ",maxtime:" + maxTime);
             if (command == null || command.length() == 0) {
                 return this;
             }
@@ -118,9 +118,9 @@ public class RunExeCommand {
                             }
                             try {
                                 int ret = process.exitValue();
-                                Log.i("auto", "exitValue Stream over"+ret);
+                                MyFunction.MyPrint("exitValue Stream over"+ret);
                             } catch (IllegalThreadStateException e) {
-                                Log.i("auto", "take maxTime,forced to destroy process");
+                                MyFunction.MyPrint("take maxTime,forced to destroy process");
                                 process.destroy();
                             }
                         }
@@ -141,13 +141,13 @@ public class RunExeCommand {
                                 writeLock.unlock();
                             }
                         } catch (Exception e) {
-                            Log.i("auto", "read InputStream exception:" + e.toString());
+                            MyFunction.MyPrint("read InputStream exception:" + e.toString());
                         } finally {
                             try {
                                 successResult.close();
-                                Log.i("auto", "read InputStream over");
+                                MyFunction.MyPrint("read InputStream over");
                             } catch (Exception e) {
-                                Log.i("auto", "close InputStream exception:" + e.toString());
+                                MyFunction.MyPrint("close InputStream exception:" + e.toString());
                             }
                         }
                     }
@@ -168,13 +168,13 @@ public class RunExeCommand {
                                 writeLock.unlock();
                             }
                         } catch (Exception e) {
-                            Log.i("auto", "read ErrorStream exception:" + e.toString());
+                            MyFunction.MyPrint("read ErrorStream exception:" + e.toString());
                         } finally {
                             try {
                                 errorResult.close();
-                                Log.i("auto", "read ErrorStream over");
+                                MyFunction.MyPrint("read ErrorStream over");
                             } catch (Exception e) {
-                                Log.i("auto", "read ErrorStream exception:" + e.toString());
+                                MyFunction.MyPrint("read ErrorStream exception:" + e.toString());
                             }
                         }
                     }
@@ -193,19 +193,19 @@ public class RunExeCommand {
 
                         } finally {
                             bRunning = false;
-                            Log.i("auto", "run command process end");
+                            MyFunction.MyPrint("run command process end");
                         }
                     }
                 });
                 t3.start();
 
                 if (bSynchronous) {
-                    Log.i("auto", "run is go to end");
+                    MyFunction.MyPrint("run is go to end");
                     t3.join();
-                    Log.i("auto", "run is end");
+                    MyFunction.MyPrint("run is end");
                 }
             } catch (Exception e) {
-                Log.i("auto", "run command process exception:" + e.toString());
+                MyFunction.MyPrint("run command process exception:" + e.toString());
             }
             return this;
         }
