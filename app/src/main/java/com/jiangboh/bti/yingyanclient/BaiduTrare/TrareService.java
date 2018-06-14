@@ -79,13 +79,18 @@ public class TrareService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         MyFunction.MyPrint( "in onStartCommand");
 
-        String action = intent.getStringExtra("action");
-        String desc = intent.getStringExtra("desc");
+        String action = intent.getStringExtra(UpdataMessage.Action);
+        String desc = intent.getStringExtra(UpdataMessage.Desc);
+        boolean befreTime = intent.getBooleanExtra(UpdataMessage.BefreTime,true);
+
         if (action != null && desc != null) {
-            MyFunction.MyPrint("收到广播: 动作：" + action + ";描述：" + desc);
+            //MyFunction.MyPrint("收到广播: 动作：" + action + ";描述：" + desc);
             if (!action.isEmpty() && !desc.isEmpty()) {
-                StaticParam.updataMessage.add(requestTag, action, desc);
-                myBaiduTrare.SendAddPoins(requestTag);
+                StaticParam.updataMessage.add(requestTag, action, desc,befreTime);
+                //myBaiduTrare.SendAddPoins(requestTag);
+                //myBaiduTrare.SendQueryRealTimeLoc(requestTag);
+                //myBaiduTrare.SendQueryCacheTrack(requestTag);
+                myBaiduTrare.SendQueryHistoryTrack(requestTag);
                 requestTag++;
             }
         }

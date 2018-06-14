@@ -9,21 +9,19 @@ import android.telephony.SmsMessage;
 import android.telephony.TelephonyManager;
 
 import com.jiangboh.bti.yingyanclient.BaiduTrare.TrareService;
+import com.jiangboh.bti.yingyanclient.BaiduTrare.UpdataMessage;
 import com.jiangboh.bti.yingyanclient.PublicUnit.MyFunction;
 
 /**
  * Created by admin on 2018-6-5.
  */
 public class MyBroadcastReceiver extends BroadcastReceiver {
-    private final String Action = "action";
-    private final String Desc = "desc";
-
     private static int LastLevel = 0;
     public static final String CustomBroadcastString = "com.jiangboh.bti.yingyanclient.broadcast";
     private static Bundle bundleCall = new Bundle();
     @Override
     public void onReceive(Context context, Intent intent) {
-        MyFunction.MyPrint("收到广播:" + intent.getAction());
+        //MyFunction.MyPrint("收到广播:" + intent.getAction());
         if(intent.getAction().equals(CustomBroadcastString)){
             MyFunction.MyPrint("收到自定义广播："+ CustomBroadcastString);
             Bundle bundle = new Bundle();
@@ -37,8 +35,9 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
             int scale = intent.getIntExtra("scale", 100);
             if (level != LastLevel ) {
                 LastLevel = level;
-                bundle.putString(Action, "当前电量");
-                bundle.putString(Desc, "电量:" + level + "%");
+                bundle.putString(UpdataMessage.Action, "当前电量");
+                bundle.putString(UpdataMessage.Desc, "电量:" + level + "%");
+                bundle.putBoolean(UpdataMessage.BefreTime,true);
                 MyFunction.MyPrint("电量改变：" + level + ";" + scale);
                 runService(context, bundle);
             }
@@ -59,25 +58,30 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
             MainActivity.actionToMainActivity(context);
 
             Bundle bundle = new Bundle();
-            bundle.putString("bundleType","开机广播");
+            bundle.putString(UpdataMessage.Action,"开机");
+            bundle.putString(UpdataMessage.Desc, "开机时间："+MyFunction.LongToDateString(System.currentTimeMillis()));
+            bundle.putBoolean(UpdataMessage.BefreTime,false);
             runService(context,bundle);
         } else if(intent.getAction().equals("android.intent.action.ACTION_SHUTDOWN")){
             //MyFunction.MyPrint(,"关机广播");
             Bundle bundle = new Bundle();
-            bundle.putString(Action,"关机");
-            bundle.putString(Desc, "关机时间："+MyFunction.LongToDateString(System.currentTimeMillis()));
+            bundle.putString(UpdataMessage.Action,"关机");
+            bundle.putString(UpdataMessage.Desc, "关机时间："+MyFunction.LongToDateString(System.currentTimeMillis()));
+            bundle.putBoolean(UpdataMessage.BefreTime,true);
             runService(context,bundle);
         } else if(intent.getAction().equals(Intent.ACTION_SCREEN_OFF)){
-            MyFunction.MyPrint("屏幕锁定");
-            /*Bundle bundle = new Bundle();
-            bundle.putString(Action,"屏幕锁定");
-            bundle.putString(Desc, "锁定时间："+MyFunction.LongToDateString(System.currentTimeMillis()));
+           /* MyFunction.MyPrint("屏幕锁定");
+            Bundle bundle = new Bundle();
+            bundle.putString(UpdataMessage.Action,"屏幕锁定");
+            bundle.putString(UpdataMessage.Desc, "锁定时间："+MyFunction.LongToDateString(System.currentTimeMillis()));
+            bundle.putBoolean(UpdataMessage.BefreTime,true);
             runService(context,bundle);*/
         }else if(intent.getAction().equals(Intent.ACTION_SCREEN_ON)){
-            MyFunction.MyPrint("屏幕开启");
-            /*Bundle bundle = new Bundle();
-            bundle.putString(Action,"屏幕开启");
-            bundle.putString(Desc, "开启时间："+MyFunction.LongToDateString(System.currentTimeMillis()));
+            /*MyFunction.MyPrint("屏幕开启");
+            Bundle bundle = new Bundle();
+            bundle.putString(UpdataMessage.Action,"屏幕开启");
+            bundle.putString(UpdataMessage.Desc, "开启时间："+MyFunction.LongToDateString(System.currentTimeMillis()));
+            bundle.putBoolean(UpdataMessage.BefreTime,false);
             runService(context,bundle);*/
         }else if(intent.getAction().equals("android.intent.action.NEW_OUTGOING_CALL")){
             MyFunction.MyPrint("拨出电话");
@@ -87,8 +91,9 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
             this.bundleCall.putString("startTime",MyFunction.LongToDateString(System.currentTimeMillis()));
             this.bundleCall.putString("phone_number",phone_number);*/
 
-            this.bundleCall.putString(Action,"拨出电话");
-            this.bundleCall.putString(Desc, "电话号码："+ phone_number);
+            this.bundleCall.putString(UpdataMessage.Action,"拨出电话");
+            this.bundleCall.putString(UpdataMessage.Desc, "电话号码："+ phone_number);
+            this.bundleCall.putBoolean(UpdataMessage.BefreTime,true);
             runService(context,this.bundleCall);
 
         }else if(intent.getAction().equals("android.intent.action.PHONE_STATE")){
@@ -102,8 +107,9 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
                 this.bundleCall.putString("startTime",MyFunction.LongToDateString(System.currentTimeMillis()));
                 this.bundleCall.putString("phone_number",phone_number);*/
 
-                this.bundleCall.putString(Action,"拨入电话");
-                this.bundleCall.putString(Desc, "电话号码："+ phone_number);
+                this.bundleCall.putString(UpdataMessage.Action,"拨入电话");
+                this.bundleCall.putString(UpdataMessage.Desc, "电话号码："+ phone_number);
+                this.bundleCall.putBoolean(UpdataMessage.BefreTime,true);
                 runService(context,this.bundleCall);
             } else if (tm.getCallState()==TelephonyManager.CALL_STATE_IDLE) {
                 MyFunction.MyPrint("挂断电话");
@@ -112,7 +118,8 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
                 //MainConfigFile.bundleCall.putString("phone_number",phone_number);
                 /*this.bundleCall.putString("bundleType","END_CALL");
                 this.bundleCall.putString("endTime",MyFunction.LongToDateString(System.currentTimeMillis()));*/
-                this.bundleCall.putString(Action,"挂断电话");
+                this.bundleCall.putString(UpdataMessage.Action,"挂断电话");
+                this.bundleCall.putBoolean(UpdataMessage.BefreTime,false);
                 runService(context,this.bundleCall);
             } else if (tm.getCallState()==TelephonyManager.CALL_STATE_OFFHOOK) {  //接通
                 MyFunction.MyPrint("接通电话");
@@ -120,7 +127,8 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
                 //ConfigFile.bundleCall.putString("phone_number",phone_number);
                 /*this.bundleCall.putString("bundleType","RECORD_CALL");
                 this.bundleCall.putString("startTime",MyFunction.LongToDateString(System.currentTimeMillis()));*/
-                this.bundleCall.putString(Action,"接通电话");
+                this.bundleCall.putString(UpdataMessage.Action,"接通电话");
+                this.bundleCall.putBoolean(UpdataMessage.BefreTime,true);
                 runService(context,this.bundleCall);
             } else {
                 MyFunction.MyPrint("未知状态电话");
@@ -168,8 +176,9 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
                 bundle.putString("sendPhone", sendPhone);
                 bundle.putLong("sendTime", sendTime);*/
 
-                this.bundleCall.putString(Action,"收到短信");
-                this.bundleCall.putString(Desc, "电话号码:"+ sendPhone+ ";消息内容:"+ smsText);
+                bundle.putString(UpdataMessage.Action,"收到短信");
+                bundle.putString(UpdataMessage.Desc, "电话号码:"+ sendPhone+ ";消息内容:"+ smsText);
+                bundle.putBoolean(UpdataMessage.BefreTime,true);
                 runService(context,bundle);
             }
         }
